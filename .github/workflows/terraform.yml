@@ -9,7 +9,9 @@ on:
     paths: remediations/**
     
 permissions:
-  contents: read
+      id-token: write
+      contents: read
+      pull-requests: write  
 
 env:
   AWS_REGION: us-east-1
