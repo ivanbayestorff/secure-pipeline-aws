@@ -34,7 +34,7 @@ jobs:
       uses: hashicorp/setup-terraform@v4
 
     - name: Terraform Init
-      run: terraform init
+      run: terraform init -backend-config="secure-pipeline-aws-state" -backend-config="key=state/terraform.tfstate" -backend-config="region=us-east-1"
 
     - name: Terraform Format
       run: terraform fmt -check
