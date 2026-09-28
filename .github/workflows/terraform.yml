@@ -20,6 +20,8 @@ jobs:
   terraform:
     name: 'Terraform-Pipeline'
     runs-on: ubuntu-latest
+    defaults:
+      working-directory: ./remediations
 
     steps:
     - name: Checkout
