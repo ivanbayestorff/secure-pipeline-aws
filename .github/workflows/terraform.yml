@@ -20,6 +20,7 @@ jobs:
       contents: read
       id-token: write
       issues: write
+      pull-requests: write
 
     name: 'Terraform Plan'
     runs-on: ubuntu-latest
