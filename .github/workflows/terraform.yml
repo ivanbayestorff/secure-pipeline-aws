@@ -9,16 +9,18 @@ on:
     paths: remediations/**
     
 permissions:
-      id-token: write
-      contents: read
-      pull-requests: write  
+  contents: read  
 
 env:
   AWS_REGION: us-east-1
 
 jobs:
-  terraform:
-    name: 'Terraform-Pipeline'
+  plan:
+    permissions:
+      contents: read
+      id-token: write
+
+    name: 'Terraform Plan'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -45,9 +47,58 @@ jobs:
       run: terraform fmt -check
       continue-on-error: true
 
-    - name: Terraform Plan
-      run: terraform plan -input=false
+    - name: Terraform Validate
+      run: terraform validate
 
-    - name: Terraform Apply
-     ## if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false
+    - name: Terraform Plan
+      run: terraform plan -input=false -out=tfplan
+
+    - name: Upload Plan Artifact
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: actions/upload-artifact@v7
+      with:
+        name: tfplan
+        path: ./remediations/tfplan
+        retention-days: 7
+
+  apply:
+    
+    environment: production
+    needs: plan
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    permissions:
+      contents: read
+      id-token: write
+           
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./remediations
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Download Plan Artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/download-artifact@v8
+        with:
+          name: tfplan
+          path: ./remediations
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.ARN_ROLE }}
+          role-session-name: gha-pipeline-aws-${{ github.run_id }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+
+      - name: Terraform Init
+        run: terraform init -backend-config="bucket=secure-pipeline-aws-state" -backend-config="key=state/terraform.tfstate" -backend-config="region=us-east-1"
+
+      - name: Apply reviewed plan
+        run: terraform apply -input=false tfplan
