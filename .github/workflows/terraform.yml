@@ -13,13 +13,13 @@ permissions:
 
 env:
   AWS_REGION: us-east-1
+  INIT_PARAMETERS: -backend-config="bucket=secure-pipeline-aws-state" -backend-config="key=state/terraform.tfstate" -backend-config="region=us-east-1" -backend-config="use_lockfile=true"
 
 jobs:
   plan:
     permissions:
       contents: read
       id-token: write
-      issues: write
       pull-requests: write
 
     name: 'Terraform Plan'
@@ -43,7 +43,7 @@ jobs:
       uses: hashicorp/setup-terraform@v4
 
     - name: Terraform Init
-      run: terraform init -backend-config="bucket=secure-pipeline-aws-state" -backend-config="key=state/terraform.tfstate" -backend-config="region=us-east-1"
+      run: terraform init ${{ env.INIT_PARAMETERS }}
 
     - name: Terraform Format
       run: terraform fmt -check
@@ -120,7 +120,7 @@ jobs:
         uses: hashicorp/setup-terraform@v4
 
       - name: Terraform Init
-        run: terraform init -backend-config="bucket=secure-pipeline-aws-state" -backend-config="key=state/terraform.tfstate" -backend-config="region=us-east-1"
+        run: terraform init ${{ env.INIT_PARAMETERS }}
 
       - name: Apply reviewed plan
         run: terraform apply -input=false tfplan
