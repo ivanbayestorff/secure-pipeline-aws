@@ -32,6 +32,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v7
 
+    - name: Setup TFLint
+      uses: terraform-linters/setup-tflint@v6
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v6.3.0
       with:
@@ -46,11 +49,17 @@ jobs:
       run: terraform init ${{ env.INIT_PARAMETERS }}
 
     - name: Terraform Format
-      run: terraform fmt -check
+      run: terraform fmt -recursive
       continue-on-error: true
 
     - name: Terraform Validate
       run: terraform validate
+     
+    - name: Init TFLint
+      run: tflint --init
+     
+    - name: Run TFLint
+      run: tflint -f compact
 
     - name: Terraform Plan
       id: plan
