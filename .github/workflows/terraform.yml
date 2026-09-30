@@ -70,7 +70,6 @@ jobs:
       id: checkov
       with:
         file: ./remediations/tfplan
-        framework: terraform
         quiet: true
         soft_fail: true
         output_format: cli
