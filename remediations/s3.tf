@@ -1,11 +1,11 @@
 resource "random_string" "random" {
-  length           = 8
-  special          = false
-  upper            = false
+  length  = 8
+  special = false
+  upper   = false
 }
 
 resource "aws_s3_bucket" "evidence" {
-  bucket = "secure-bucket-evidence-${random_string.random.result}"
+  bucket        = "secure-bucket-evidence-${random_string.random.result}"
   force_destroy = true
 
 }
@@ -57,7 +57,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "evidence" {
   depends_on = [aws_s3_bucket_versioning.evidence]
 }
 
-# Deny any non-TLS access — Checkov will look for this.
 data "aws_iam_policy_document" "evidence_tls_only" {
   statement {
     sid     = "DenyInsecureTransport"
@@ -87,24 +86,4 @@ resource "aws_s3_bucket_policy" "evidence" {
   policy = data.aws_iam_policy_document.evidence_tls_only.json
 
   depends_on = [aws_s3_bucket_public_access_block.evidence]
-}
-
-resource "aws_s3_bucket_lifecycle_configuration" "pass" { 
-  
-  bucket = aws_s3_bucket.evidence.id
-
-  rule {
-    id     = "log"
-    status = "Enabled"
-
-    filter {}
-
-    expiration {
-      days = 90
-    }
-
-    noncurrent_version_expiration {
-      noncurrent_days = 30
-    }
-  }
 }
