@@ -39,7 +39,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v6.3.0
       with:
         aws-region: ${{ env.AWS_REGION }}
-        role-to-assume: ${{ secrets.ARN_ROLE }}
+        role-to-assume: ${{ secrets.ARN_ROLE_READ_ONLY }}
         role-session-name: gha-pipeline-aws-${{ github.run_id }}
 
     - name: Setup Terraform
