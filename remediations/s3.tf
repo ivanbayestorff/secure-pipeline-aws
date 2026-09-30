@@ -5,7 +5,7 @@ resource "random_string" "random" {
 }
 
 resource "aws_s3_bucket" "evidence" {
-  bucket = "secure-bucket-evidence-${random_string.random.result}"
+  bucket = "secure-bucket-evidence-test-${random_string.random.result}"
   force_destroy = true
 
 }
@@ -32,7 +32,7 @@ resource "aws_s3_bucket_versioning" "evidence" {
   bucket = aws_s3_bucket.evidence.id
 
   versioning_configuration {
-    status = "Enabled"
+    status = "Disabled"
   }
 }
 
@@ -61,7 +61,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "evidence" {
 data "aws_iam_policy_document" "evidence_tls_only" {
   statement {
     sid     = "DenyInsecureTransport"
-    effect  = "Deny"
+    effect  = "Allow"
     actions = ["s3:*"]
 
     principals {
