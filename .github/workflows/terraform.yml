@@ -68,11 +68,9 @@ jobs:
       if: github.event_name == 'pull_request'
       uses: bridgecrewio/checkov-action@master
       with:
-        file: tfplan.json
+        file: ./remediations/tfplan.json
         quiet: true
         soft_fail: true
-        framework: terraform
-
 
 
     - name: Comment plan on PR
