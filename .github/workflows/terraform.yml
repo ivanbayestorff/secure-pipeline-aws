@@ -33,8 +33,9 @@ jobs:
       uses: actions/checkout@v7
 
     - name: Setup TFLint
+      if: github.event_name == 'pull_request'
       uses: terraform-linters/setup-tflint@v6
-
+      
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v6.3.0
       with:
@@ -49,10 +50,12 @@ jobs:
       run: terraform init ${{ env.INIT_PARAMETERS }}
 
     - name: Terraform Format
+      if: github.event_name == 'pull_request'
       run: terraform fmt -check
       continue-on-error: true
 
     - name: Terraform Validate
+      if: github.event_name == 'pull_request'
       run: terraform validate
      
     - name: Init TFLint
@@ -89,8 +92,8 @@ jobs:
 
 
     - name: Comment plan on PR
-      uses: actions/github-script@v9
       if: github.event_name == 'pull_request'
+      uses: actions/github-script@v9      
       with:
         script: |
           const body = `#### Terraform Plan — \`${{ steps.plan.outcome }}\`
@@ -108,8 +111,8 @@ jobs:
             })
 
     - name: Comment Checkov report on PR
-      uses: actions/github-script@v9
       if: github.event_name == 'pull_request'
+      uses: actions/github-script@v9
       with:
         script: |
          const out = require('fs').readFileSync('checkov/results_cli.txt', 'utf8');
