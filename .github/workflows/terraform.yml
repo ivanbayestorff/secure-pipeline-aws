@@ -49,16 +49,18 @@ jobs:
       run: terraform init ${{ env.INIT_PARAMETERS }}
 
     - name: Terraform Format
-      run: terraform fmt -recursive
+      run: terraform fmt -check
       continue-on-error: true
 
     - name: Terraform Validate
       run: terraform validate
      
     - name: Init TFLint
+      if: github.event_name == 'pull_request'
       run: tflint --init
-     
+      
     - name: Run TFLint
+      if: github.event_name == 'pull_request'
       run: tflint -f compact
 
     - name: Terraform Plan
