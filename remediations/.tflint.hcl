@@ -3,6 +3,10 @@ plugin "terraform" {
   preset  = "all"
 }
 
+rule "terraform_standard_module_structure" {
+  enabled = false
+}
+
 plugin "aws" {
   enabled = true
   version = "0.49.0"

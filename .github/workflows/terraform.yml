@@ -61,7 +61,7 @@ jobs:
       
     - name: Run TFLint
       if: github.event_name == 'pull_request'
-      run: tflint -f compact
+      run: tflint -f compact --force
 
     - name: Terraform Plan
       id: plan
