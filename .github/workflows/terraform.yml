@@ -32,6 +32,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v7
 
+    - name: Setup TFLint
+      uses: terraform-linters/setup-tflint@v6
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v6.3.0
       with:
@@ -51,6 +54,14 @@ jobs:
 
     - name: Terraform Validate
       run: terraform validate
+     
+    - name: Init TFLint
+      if: github.event_name == 'pull_request'
+      run: tflint --init
+      
+    - name: Run TFLint
+      if: github.event_name == 'pull_request'
+      run: tflint -f compact --minimum-failure-severity=error
 
     - name: Terraform Plan
       id: plan
