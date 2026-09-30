@@ -57,7 +57,7 @@ jobs:
       run: terraform plan -no-color -input=false -out=tfplan
 
     - name: Upload Plan Artifact
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      if: github.event_name == 'pull_request' && github.ref == 'refs/heads/main'
       uses: actions/upload-artifact@v7
       with:
         name: tfplan
@@ -75,7 +75,6 @@ jobs:
         output_format: cli
         output_file_path: checkov
         framework: terraform
-        log_level: DEBUG
 
 
     - name: Comment plan on PR
