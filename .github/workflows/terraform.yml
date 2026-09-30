@@ -57,7 +57,7 @@ jobs:
       run: terraform plan -no-color -input=false -out=tfplan
 
     - name: Upload Plan Artifact
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      if: github.event_name == 'pull_request'
       uses: actions/upload-artifact@v7
       with:
         name: tfplan
@@ -69,12 +69,12 @@ jobs:
       uses: bridgecrewio/checkov-action@master
       id: checkov
       with:
-        file: ./remediations/tfplan
+        directory: ./remediations
         quiet: true
         soft_fail: true
         output_format: cli
         output_file_path: checkov
-        log_level: DEBUG
+        framework: terraform
 
 
     - name: Comment plan on PR
