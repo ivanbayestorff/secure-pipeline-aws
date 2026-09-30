@@ -69,11 +69,13 @@ jobs:
       uses: bridgecrewio/checkov-action@master
       id: checkov
       with:
+        directory: ./remediations
         file: ./remediations/tfplan
         quiet: true
         soft_fail: true
         output_format: cli
         output_file_path: checkov
+        framework: terraform
         log_level: DEBUG
 
 
