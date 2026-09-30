@@ -89,12 +89,22 @@ resource "aws_s3_bucket_policy" "evidence" {
   depends_on = [aws_s3_bucket_public_access_block.evidence]
 }
 
-resource "aws_s3_bucket_lifecycle_configuration" "pass" { bucket = aws_s3_bucket.bucket.id
+resource "aws_s3_bucket_lifecycle_configuration" "pass" { 
+  
+  bucket = aws_s3_bucket.evidence.id
 
   rule {
+    id     = "log"
+    status = "Enabled"
 
-    abort_incomplete_multipart_upload {
+    filter {}
 
-    days_after_initiation = 7
+    expiration {
+      days = 90
+    }
 
-    } filter {} id = "log" status = "Enabled" } }
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+  }
+}
