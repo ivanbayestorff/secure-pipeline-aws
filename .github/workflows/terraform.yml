@@ -74,6 +74,7 @@ jobs:
         soft_fail: true
         output_format: cli
         output_file_path: checkov
+        log_level: DEBUG
 
 
     - name: Comment plan on PR
