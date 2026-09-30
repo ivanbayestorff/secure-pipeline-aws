@@ -54,7 +54,7 @@ jobs:
 
     - name: Terraform Plan
       id: plan
-      run: terraform plan -no-color -input=false -out=tfplan
+      run: terraform plan -no-color -input=false -out=tfplan.json
 
     - name: Upload Plan Artifact
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -63,6 +63,17 @@ jobs:
         name: tfplan
         path: ./remediations/tfplan
         retention-days: 7
+
+    - name: Checkov Scan
+      if: github.event_name == 'pull_request'
+      uses: bridgecrewio/checkov-action@master
+      with:
+        file: tfplan.json
+        quiet: true
+        soft_fail: true
+        framework: terraform
+
+
 
     - name: Comment plan on PR
       uses: actions/github-script@v9
@@ -106,7 +117,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/download-artifact@v8
         with:
-          name: tfplan
+          name: tfplan.json
           path: ./remediations
 
       - name: Configure AWS Credentials
@@ -123,4 +134,4 @@ jobs:
         run: terraform init ${{ env.INIT_PARAMETERS }}
 
       - name: Apply reviewed plan
-        run: terraform apply -input=false tfplan
+        run: terraform apply -input=false tfplan.json
