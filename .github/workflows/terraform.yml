@@ -36,28 +36,6 @@ jobs:
       if: github.event_name == 'pull_request'
       uses: terraform-linters/setup-tflint@v6
       
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v6.3.0
-      with:
-        aws-region: ${{ env.AWS_REGION }}
-        role-to-assume: ${{ secrets.ARN_ROLE_READ_ONLY }}
-        role-session-name: gha-pipeline-aws-${{ github.run_id }}
-
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v4
-
-    - name: Terraform Init
-      run: terraform init ${{ env.INIT_PARAMETERS }}
-
-    - name: Terraform Format
-      if: github.event_name == 'pull_request'
-      run: terraform fmt -check
-      continue-on-error: true
-
-    - name: Terraform Validate
-      if: github.event_name == 'pull_request'
-      run: terraform validate
-     
     - name: Init TFLint
       if: github.event_name == 'pull_request'
       run: tflint --init
@@ -65,18 +43,6 @@ jobs:
     - name: Run TFLint
       if: github.event_name == 'pull_request'
       run: tflint -f compact --minimum-failure-severity=error
-
-    - name: Terraform Plan
-      id: plan
-      run: terraform plan -no-color -input=false -out=tfplan
-
-    - name: Upload Plan Artifact
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      uses: actions/upload-artifact@v7
-      with:
-        name: tfplan
-        path: ./remediations/tfplan
-        retention-days: 7
 
     - name: Checkov Scan
       if: github.event_name == 'pull_request'
@@ -90,13 +56,48 @@ jobs:
         output_file_path: checkov
         framework: terraform
 
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v6.3.0
+      with:
+        aws-region: ${{ env.AWS_REGION }}
+        role-to-assume: ${{ secrets.ARN_ROLE_READ_ONLY }}
+        role-session-name: gha-pipeline-aws-${{ github.run_id }}
 
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v4
+      with:
+        terraform_version: v1.16.0
+
+    - name: Terraform Init
+      run: terraform init ${{ env.INIT_PARAMETERS }}
+
+    - name: Terraform Format
+      if: github.event_name == 'pull_request'
+      run: terraform fmt -check
+      continue-on-error: true
+
+    - name: Terraform Validate
+      if: github.event_name == 'pull_request'
+      run: terraform validate
+     
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -no-color -input=false -out=tfplan
+
+    - name: Upload Plan Artifact
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: actions/upload-artifact@v7
+      with:
+        name: tfplan
+        path: ./remediations/tfplan
+        retention-days: 7
+    
     - name: Comment plan on PR
       if: github.event_name == 'pull_request'
       uses: actions/github-script@v9      
       with:
         script: |
-          const body = `#### Terraform Plan — \`${{ steps.plan.outcome }}\`
+          const body = `#### Terraform Plan || Plan Status: \`${{ steps.plan.outcome }}\`
           <details><summary>Show plan</summary>
 
             \`\`\`terraform
@@ -116,7 +117,7 @@ jobs:
       with:
         script: |
          const out = require('fs').readFileSync('checkov/results_cli.txt', 'utf8');
-          const body = `#### Checkov Scan — \`${{ steps.checkov.outcome }}\`
+          const body = `#### Checkov Scan || Checkov Status: \`${{ steps.checkov.outcome }}\`
           <details><summary>Show results</summary>
 
           \`\`\`
@@ -165,6 +166,8 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: v1.16.0
 
       - name: Terraform Init
         run: terraform init ${{ env.INIT_PARAMETERS }}
