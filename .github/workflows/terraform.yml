@@ -156,7 +156,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6.3.0
         with:
-          aws-region: ${{ var.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION }}
           role-to-assume: ${{ secrets.ARN_ROLE }}
           role-session-name: gha-pipeline-aws-${{ github.run_id }}
 
@@ -166,7 +166,7 @@ jobs:
           terraform_version: v1.16.0
 
       - name: Terraform Init
-        run: terraform init ${{ var.INIT_PARAMETERS }}
+        run: terraform init ${{ vars.INIT_PARAMETERS }}
 
       - name: Apply reviewed plan
         run: terraform apply -input=false tfplan
