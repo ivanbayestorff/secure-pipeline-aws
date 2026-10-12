@@ -3,10 +3,10 @@ name: 'Terraform'
 on:
   push:
     branches: main
-    paths: remediations/**
+    paths: pipeline/**
   pull_request:
     branches: main
-    paths: remediations/**
+    paths: pipeline/**
     
 permissions:
   contents: read  
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./remediations
+        working-directory: ./pipeline
 
     steps:
     - name: Checkout
@@ -47,7 +47,7 @@ jobs:
       uses: bridgecrewio/checkov-action@master
       id: checkov
       with:
-        directory: ./remediations
+        directory: ./pipeline
         quiet: true
         soft_fail: true
         output_format: cli
@@ -87,7 +87,7 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: tfplan
-        path: ./remediations/tfplan
+        path: ./pipeline/tfplan
         retention-days: 7
     
     - name: Comment plan on PR
@@ -142,7 +142,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./remediations
+        working-directory: ./pipeline
 
     steps:
       - name: Checkout
@@ -153,7 +153,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: tfplan
-          path: ./remediations
+          path: ./pipeline
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6.3.0
