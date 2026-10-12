@@ -93,7 +93,7 @@ jobs:
       uses: actions/github-script@v9      
       with:
         script: |
-          const body = `#### Terraform Plan || Plan Status: \`${{ steps.plan.outcome }}\`
+          const body = `#### [run: \`${{ steps.plan.outcome }}\`] Terraform Plan
           <details><summary>Show plan</summary>
 
             \`\`\`terraform
@@ -113,7 +113,7 @@ jobs:
       with:
         script: |
          const out = require('fs').readFileSync('checkov/results_cli.txt', 'utf8');
-          const body = `#### Checkov Scan || Checkov Status: \`${{ steps.checkov.outcome }}\`
+          const body = `#### [run: \`${{ steps.checkov.outcome }}\`] Checkov Scan
           <details><summary>Show results</summary>
 
           \`\`\`
