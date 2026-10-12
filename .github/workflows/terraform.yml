@@ -35,6 +35,8 @@ jobs:
     - name: Init TFLint
       if: github.event_name == 'pull_request'
       run: tflint --init
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
       
     - name: Run TFLint
       if: github.event_name == 'pull_request'
