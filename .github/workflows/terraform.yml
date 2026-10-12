@@ -11,10 +11,6 @@ on:
 permissions:
   contents: read  
 
-env:
-  AWS_REGION: us-east-1
-  INIT_PARAMETERS: -backend-config="bucket=secure-pipeline-aws-state" -backend-config="key=state/terraform.tfstate" -backend-config="region=us-east-1" -backend-config="use_lockfile=true"
-
 jobs:
   plan:
     permissions:
@@ -59,7 +55,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v6.3.0
       with:
-        aws-region: ${{ env.AWS_REGION }}
+        aws-region: ${{ vars.AWS_REGION }}
         role-to-assume: ${{ secrets.ARN_ROLE_READ_ONLY }}
         role-session-name: gha-pipeline-aws-${{ github.run_id }}
 
@@ -69,7 +65,7 @@ jobs:
         terraform_version: v1.16.0
 
     - name: Terraform Init
-      run: terraform init ${{ env.INIT_PARAMETERS }}
+      run: terraform init ${{ vars.INIT_PARAMETERS }}
 
     - name: Terraform Format
       if: github.event_name == 'pull_request'
@@ -160,7 +156,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6.3.0
         with:
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ var.AWS_REGION }}
           role-to-assume: ${{ secrets.ARN_ROLE }}
           role-session-name: gha-pipeline-aws-${{ github.run_id }}
 
@@ -170,7 +166,7 @@ jobs:
           terraform_version: v1.16.0
 
       - name: Terraform Init
-        run: terraform init ${{ env.INIT_PARAMETERS }}
+        run: terraform init ${{ var.INIT_PARAMETERS }}
 
       - name: Apply reviewed plan
         run: terraform apply -input=false tfplan
