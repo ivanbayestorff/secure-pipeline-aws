@@ -38,7 +38,29 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
       
     - name: Run TFLint
-      run: tflint -f compact --minimum-failure-severity=error
+      id: tflint
+      shell: bash
+      run: tflint -f compact --minimum-failure-severity=error | tee tflint.txt
+      continue-on-error: true
+
+    - name: Comment TFLint report on PR
+      uses: actions/github-script@v9
+      with:
+        script: |
+          const out = require('fs').readFileSync('pipeline/tflint.txt', 'utf8') || 'No issues found';
+          const body = `#### \`[${{ steps.tflint.outcome }}]\` TFLint
+          <details><summary>Show results</summary>
+
+          \`\`\`
+          ${out}
+          \`\`\`
+          </details>`;
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body
+          })
 
     - name: Checkov Scan
       uses: bridgecrewio/checkov-action@master
@@ -113,6 +135,10 @@ jobs:
             repo: context.repo.repo,
             body
           })
+
+    - name: Fail on TFLint error
+      if: steps.tflint.outcome == 'failure'
+      run: exit 1
 
   apply:
     
