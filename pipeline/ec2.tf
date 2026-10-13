@@ -1,3 +1,4 @@
+/*
 variable "instance_type" {
   description = "EC2 instance type (Graviton, to match the arm64 AMI)"
   type        = string
