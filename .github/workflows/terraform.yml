@@ -175,7 +175,7 @@ jobs:
   apply-dev:
     name: 'Apply (dev)'
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    environment: dev
+    environment: Development
     concurrency:
       group: terraform-dev
       cancel-in-progress: false
@@ -212,7 +212,7 @@ jobs:
   apply-prod:
     name: 'Apply (prod)'
     needs: apply-dev
-    environment: production
+    environment: Production
     concurrency:
       group: terraform-prod
       cancel-in-progress: false
