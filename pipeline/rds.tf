@@ -21,11 +21,12 @@ resource "aws_rds_cluster" "app" {
   manage_master_user_password         = true # RDS generates and rotates it in Secrets Manager; never in state
   iam_database_authentication_enabled = true
   storage_encrypted                   = true
-  deletion_protection                 = true
+  deletion_protection                 = false
 
   backup_retention_period         = 7
   copy_tags_to_snapshot           = true
   final_snapshot_identifier       = "secure-pipeline-aurora-final"
+  skip_final_snapshot               = true
   enabled_cloudwatch_logs_exports = ["postgresql"]
 
   # Serverless v2 that pauses after 30 idle minutes, so an unused database costs nothing for compute
