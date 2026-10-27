@@ -95,7 +95,7 @@ jobs:
       with:
         terraform_version: v1.16.0
 
-    - name: Terraform Init (no backend)
+    - name: Terraform Init
       run: terraform init -backend=false
 
     - name: Terraform Format
