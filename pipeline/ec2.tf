@@ -1,3 +1,4 @@
+/*
 variable "instance_type" {
   description = "EC2 instance type (Graviton, to match the arm64 AMI)"
   type        = string
@@ -60,3 +61,4 @@ resource "aws_instance" "app" {
     ignore_changes = [ami] # a new AMI release shouldn't replace the running instance
   }
 }
+*/
