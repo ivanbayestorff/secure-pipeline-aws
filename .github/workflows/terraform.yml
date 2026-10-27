@@ -109,7 +109,6 @@ jobs:
       if: steps.tflint.outcome == 'failure'
       run: exit 1
 
-  # PR: plan against each account with its read-only role.
   plan:
     name: 'Terraform Plan (${{ matrix.env }})'
     if: github.event_name == 'pull_request'
