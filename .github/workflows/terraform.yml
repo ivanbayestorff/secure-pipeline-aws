@@ -204,7 +204,7 @@ jobs:
           terraform_version: v1.16.0
 
       - name: Terraform Init
-        run: terraform init ${{ vars.INIT_PARAMETERS }}
+        run: terraform init ${{ vars.INIT_PARAMETERS_DEV }}
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false -var-file=envs/dev.tfvars
@@ -241,7 +241,7 @@ jobs:
           terraform_version: v1.16.0
 
       - name: Terraform Init
-        run: terraform init ${{ vars.INIT_PARAMETERS }}
+        run: terraform init ${{ vars.INIT_PARAMETERS_PROD }}
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false -var-file=envs/prod.tfvars
