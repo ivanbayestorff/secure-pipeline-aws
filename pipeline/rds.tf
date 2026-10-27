@@ -48,3 +48,6 @@ resource "aws_rds_cluster_instance" "app" {
   publicly_accessible        = false
   auto_minor_version_upgrade = true
 }
+
+
+##
