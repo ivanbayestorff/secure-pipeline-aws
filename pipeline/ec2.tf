@@ -1,10 +1,4 @@
 /*
-variable "instance_type" {
-  description = "EC2 instance type (Graviton, to match the arm64 AMI)"
-  type        = string
-  default     = "t4g.micro"
-}
-
 # Latest Amazon Linux 2023 for arm64
 data "aws_ami" "al2023" {
   most_recent = true
