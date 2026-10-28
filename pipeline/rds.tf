@@ -1,9 +1,4 @@
-/* variable "db_name" {
-  description = "Name of the database created in the cluster"
-  type        = string
-  default     = "appdb"
-}
-
+/*
 # Newest Aurora PostgreSQL 17.x: from version 17, TLS connections are required by default
 data "aws_rds_engine_version" "postgresql" {
   engine  = "aurora-postgresql"

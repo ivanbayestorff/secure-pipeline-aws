@@ -1,2 +1,2 @@
-environment = "dev"
+environment   = "dev"
 instance_type = "t4g.nano"
